@@ -1,0 +1,15 @@
+<input type="hidden" name="{{ widget.name }}" {% if widget.value != None %}
+       value="{{ widget.value }}" {% endif %}{% include "django/forms/widgets/attrs.html" %}>
+<select name="list-selection-{{ widget.name }}">
+    <option value="">
+        -- None --
+    </option>
+    {% for event in widget.selectable_events %}
+        {% if event.id == widget.stored_event_id %} selected{% endif %}
+        <option value="{{ event.id }}" {% if event.id|stringformat:"i" == widget.stored_event_id %} selected{% endif %}>
+            {{ event.topic }}
+        </option>
+    {% endfor %}
+</select>
+
+{{ widget.extra_js|safe }}

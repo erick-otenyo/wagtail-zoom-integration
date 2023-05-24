@@ -1,0 +1,4 @@
+include README.md
+recursive-include wagtailzoom *.py
+recursive-include wagtailzoom *.html
+recursive-include wagtailzoom/templates *

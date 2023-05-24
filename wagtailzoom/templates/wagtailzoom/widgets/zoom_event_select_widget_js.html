@@ -1,0 +1,33 @@
+<script>
+    const zoom_events = {{ selectable_events|safe }};
+
+    $(document).ready(function () {
+        function get_event_json_data_for_{{ widget_js_name }}() {
+            return JSON.parse($("input[name='{{ widget_name }}']").val());
+        }
+
+        function set_event_json_data_for_{{ widget_js_name }}(json_data) {
+            $("input[name='{{ widget_name }}']").val(JSON.stringify(json_data));
+        }
+
+        $("select[name='list-selection-{{ widget_name }}']").change(function () {
+            const event_id = $(this).val();
+            if (event_id) {
+                const event = zoom_events.find(event => String(event.id) === event_id)
+                const event_data = get_event_json_data_for_{{ widget_js_name }}();
+                event_data['event_id'] = event_id;
+                event_data['event_type'] = event.event_type
+                event_data['event_topic'] = event.topic
+                set_event_json_data_for_{{ widget_js_name }}(event_data);
+            } else {
+                const event_data = {
+                    "event_id": "",
+                    "event_type": "",
+                    "event_topic": ""
+                }
+                set_event_json_data_for_{{ widget_js_name }}(event_data);
+            }
+        });
+    });
+
+</script>
