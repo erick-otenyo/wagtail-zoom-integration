@@ -6,7 +6,6 @@ from wagtail.admin import messages
 from wagtail.admin import widgets as wagtail_admin_widgets
 from wagtail.contrib.forms.models import AbstractFormField
 
-from .models import AbstractZoomIntegrationForm
 from .views import zoom_integration_view
 
 
@@ -19,7 +18,7 @@ def urlconf_wagtail_zoom():
 
 @hooks.register('register_page_listing_buttons')
 def page_listing_buttons(page, page_perms, next_url=None):
-    if isinstance(page, AbstractZoomIntegrationForm):
+    if hasattr(page, "integration_name") and page.integration_name == "zoom":
         if page.zoom_event_id:
             url = reverse("zoom_integration_view", args=[page.pk, ])
             yield wagtail_admin_widgets.PageListingButton(
@@ -31,7 +30,7 @@ def page_listing_buttons(page, page_perms, next_url=None):
 
 @hooks.register('after_publish_page')
 def show_zoom_integration_fields_warning(request, page):
-    if isinstance(page, AbstractZoomIntegrationForm):
+    if hasattr(page, "integration_name") and page.integration_name == "zoom":
         form_fields_changed = False
 
         if page.zoom_event_id:

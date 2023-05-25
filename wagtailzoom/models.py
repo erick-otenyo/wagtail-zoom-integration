@@ -41,12 +41,13 @@ class ZoomSettings(BaseSiteSetting):
 
 class AbstractZoomIntegrationForm(AbstractForm):
     zoom_event = models.TextField(blank=True, null=True, verbose_name=_('Zoom Event'), help_text=_('Select Zoom Event'))
-
     zoom_reg_fields_mapping = models.TextField(blank=True, null=True)
 
     integration_panels = [
         FieldPanel("zoom_event", widget=ZoomEventSelectWidget),
     ]
+    
+    integration_name = "zoom"
 
     class Meta:
         abstract = True
