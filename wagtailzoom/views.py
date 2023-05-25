@@ -45,8 +45,9 @@ def zoom_integration_view(request, page_id):
                     context.update({"zoom_event": zoom_event})
 
                     if approval_type == 2:
+                        topic = zoom_event.get("topic")
                         context.update({
-                            "zoom_error": f"Registration is not enabled for the event '{zoom_event.topic}'. "
+                            "zoom_error": f"Registration is not enabled for the event '{topic}'. "
                                           f"Please enable registration for this event in your Zoom Account "
                                           f"and try again"})
 
