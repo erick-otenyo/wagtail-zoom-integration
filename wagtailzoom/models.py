@@ -70,13 +70,19 @@ class AbstractZoomIntegrationForm(AbstractForm):
 
     def get_data(self):
         data = {}
-        event = json.loads(self.zoom_event)
-        if event:
-            data.update({
-                "event_id": event.get("event_id"),
-                "event_type": event.get("event_type"),
-                "event_topic": event.get("event_topic")
-            })
+        if self.zoom_event:
+            try:
+                event = json.loads(self.zoom_event)
+
+                if event:
+                    data.update({
+                        "event_id": event.get("event_id"),
+                        "event_type": event.get("event_type"),
+                        "event_topic": event.get("event_topic")
+                    })
+            except Exception:
+                pass
+
         return data
 
     def post_process_submission(self, form, form_submission):
