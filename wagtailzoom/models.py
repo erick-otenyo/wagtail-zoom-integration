@@ -46,8 +46,8 @@ class AbstractZoomIntegrationForm(AbstractForm):
     integration_panels = [
         FieldPanel("zoom_event", widget=ZoomEventSelectWidget),
     ]
-    
-    integration_name = "zoom"
+
+    is_zoom_integration = True
 
     class Meta:
         abstract = True

@@ -18,7 +18,7 @@ def urlconf_wagtail_zoom():
 
 @hooks.register('register_page_listing_buttons')
 def page_listing_buttons(page, page_perms, next_url=None):
-    if hasattr(page, "integration_name") and page.integration_name == "zoom":
+    if hasattr(page, "is_zoom_integration") and hasattr(page, "zoom_event"):
         if page.zoom_event_id:
             url = reverse("zoom_integration_view", args=[page.pk, ])
             yield wagtail_admin_widgets.PageListingButton(
@@ -30,7 +30,7 @@ def page_listing_buttons(page, page_perms, next_url=None):
 
 @hooks.register('after_publish_page')
 def show_zoom_integration_fields_warning(request, page):
-    if hasattr(page, "integration_name") and page.integration_name == "zoom":
+    if hasattr(page, "is_zoom_integration") and hasattr(page, "zoom_event"):
         form_fields_changed = False
 
         if page.zoom_event_id:
