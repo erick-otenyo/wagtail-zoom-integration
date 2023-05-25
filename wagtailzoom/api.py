@@ -4,6 +4,8 @@ import iso8601
 import jwt
 import requests
 
+from wagtailzoom.errors import ZoomApiCredentialsError
+
 JWT_EXP_DELTA_SECONDS = 60 * 2  # 2 minutes
 
 
@@ -16,6 +18,15 @@ class ZoomApi:
         self.is_active = False
         self.headers = {}
         self.base_url = "https://api.zoom.us/v2"
+
+        if not api_key:
+            raise ZoomApiCredentialsError(
+                "No Zoom API Key provided. Please set API Key from Zoom Settings under settings")
+
+        if not api_secret:
+            raise ZoomApiCredentialsError(
+                "No Zoom API Secret provided. Please set API Secret from Zoom Settings under settings")
+
         self.init_api(api_key, api_secret)
 
     def init_api(self, api_key, api_secret):
@@ -91,6 +102,11 @@ class ZoomApi:
 
     def get_meeting(self, meeting_id):
         url = "{}/meetings/{}".format(self.base_url, meeting_id)
+        response = self._get(url)
+        return response.json()
+
+    def get_webinar(self, webinar_id):
+        url = "{}/webinars/{}".format(self.base_url, webinar_id)
         response = self._get(url)
         return response.json()
 

@@ -2,9 +2,11 @@ import json
 
 from django.forms.widgets import Input, Select
 from django.template.loader import render_to_string
+from django.utils.translation import gettext as _
 from wagtail.models import Site
 
 from .api import ZoomApi
+from .errors import ZoomApiCredentialsError
 
 
 class CustomSelect(Select):
@@ -23,14 +25,26 @@ class ZoomEventSelectWidget(Input):
     def get_context(self, name, value, attrs):
         ctx = super(ZoomEventSelectWidget, self).get_context(name, value, attrs)
 
+        zoom_error = None
+
         json_value = self.get_json_value(value)
         event_id = json_value.get("event_id")
-        zoom_events = self.get_zoom_events()
+        zoom_events = []
+
+        try:
+            zoom_events = self.get_zoom_events()
+        except ZoomApiCredentialsError as e:
+            zoom_error = e.message
+        except Exception as e:
+            zoom_error = _("Error obtaining Zoom events. "
+                           "Please make sure the Zoom credentials in Zoom Settings are correct, "
+                           "and have required Zoom Account access scope.")
 
         ctx["widget"]["value"] = json.dumps(json_value)
         ctx['widget']['extra_js'] = self.render_js(name, event_id, zoom_events)
         ctx["widget"]["selectable_events"] = zoom_events
         ctx["widget"]["stored_event_id"] = event_id
+        ctx["widget"]["zoom_error"] = zoom_error
 
         return ctx
 
@@ -65,6 +79,7 @@ class ZoomEventSelectWidget(Input):
         current_site = Site.objects.get(is_default_site=True)
 
         zoom_settings = ZoomSettings.for_site(current_site)
+
         api = ZoomApi(api_key=zoom_settings.api_key, api_secret=zoom_settings.api_secret)
         events = api.get_events()
 

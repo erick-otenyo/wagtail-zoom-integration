@@ -17,52 +17,61 @@
 
     <div class="nice-padding">
 
-        {% if not has_form_fields %}
+        {% if zoom_error %}
             <div class="help-block help-warning">
                 <svg class="icon icon-warning icon" aria-hidden="true">
                     <use href="#icon-warning"></use>
                 </svg>
-                Page has no form fields. Please add form fields and try again.
+                {{ zoom_error }}
             </div>
-            {% if page_edit_url %}
-                <div style="margin-bottom: 20px;">
-                    <a href="{{ page_edit_url }}" class="button button-secondary">Add Form Fields</a>
-                </div>
-            {% endif %}
         {% else %}
-            <h2 style="margin-bottom: 20px"> Match {{ zoom_event.event_topic }} Event fields with {{ page.title }}
-                form fields</h2>
-
-            {% if page_edit_url %}
-                <div style="margin-bottom: 20px;">
-
-                    <a href="{{ page_edit_url }}" class="button button-secondary">Edit Form Fields</a>
+            {% if not has_form_fields %}
+                <div class="help-block help-warning">
+                    <svg class="icon icon-warning icon" aria-hidden="true">
+                        <use href="#icon-warning"></use>
+                    </svg>
+                    Page has no form fields. Please add form fields and try again.
                 </div>
-            {% endif %}
-
-            <form method="POST" enctype="multipart/form-data">
-                {% if form.non_field_errors %}
-                    <div class="non-field_errors" style="margin-bottom: 20px">
-                        {% include "wagtailadmin/shared/non_field_errors.html" with form=form %}
+                {% if page_edit_url %}
+                    <div style="margin-bottom: 20px;">
+                        <a href="{{ page_edit_url }}" class="button button-secondary">Add Form Fields</a>
                     </div>
                 {% endif %}
-                <ul class="fields">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        {% if field.is_hidden %}
-                            {{ field }}
-                        {% else %}
-                            {% include "wagtailadmin/shared/field_as_li.html" %}
-                        {% endif %}
-                    {% endfor %}
-                    <li>
-                        <button type="submit" class="button"> {% trans 'Save' %}</button>
-                    </li>
-                </ul>
-            </form>
+            {% else %}
+                <h2 style="margin-bottom: 20px"> Match {{ zoom_event.event_topic }} Event fields with {{ page.title }}
+                    form fields</h2>
+
+                {% if page_edit_url %}
+                    <div style="margin-bottom: 20px;">
+
+                        <a href="{{ page_edit_url }}" class="button button-secondary">Edit Form Fields</a>
+                    </div>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% if form.non_field_errors %}
+                        <div class="non-field_errors" style="margin-bottom: 20px">
+                            {% include "wagtailadmin/shared/non_field_errors.html" with form=form %}
+                        </div>
+                    {% endif %}
+                    <ul class="fields">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                                {% include "wagtailadmin/shared/field_as_li.html" %}
+                            {% endif %}
+                        {% endfor %}
+                        <li>
+                            <button type="submit" class="button"> {% trans 'Save' %}</button>
+                        </li>
+                    </ul>
+                </form>
 
 
 
+            {% endif %}
         {% endif %}
 
 

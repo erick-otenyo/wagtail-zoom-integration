@@ -3,11 +3,15 @@ import json
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from modelcluster.models import get_all_child_relations
 from wagtail.contrib.forms.models import AbstractFormField
 from wagtail.models import Page
 
+from .api import ZoomApi
+from .errors import ZoomApiCredentialsError
 from .forms import ZoomIntegrationForm
+from .models import ZoomSettings
 
 
 def zoom_integration_view(request, page_id):
@@ -21,7 +25,40 @@ def zoom_integration_view(request, page_id):
     explore_url = reverse("wagtailadmin_explore", args=[parent_page.id])
 
     if form_page.zoom_event:
-        context.update({"zoom_event": json.loads(form_page.zoom_event)})
+        zoom_event_db = json.loads(form_page.zoom_event)
+        event_id = zoom_event_db.get("event_id", None)
+        event_type = zoom_event_db.get("event_type", None)
+
+        if event_id:
+            try:
+                zoom_settings = ZoomSettings.for_request(request)
+                zoom_api = ZoomApi(api_key=zoom_settings.api_key, api_secret=zoom_settings.api_secret)
+
+                if event_type == "meeting":
+                    zoom_event = zoom_api.get_meeting(event_id)
+                else:
+                    zoom_event = zoom_api.get_webinar(event_id)
+
+                if zoom_event:
+
+                    approval_type = zoom_event.get("settings", {}).get("approval_type")
+                    context.update({"zoom_event": zoom_event})
+
+                    if approval_type == 2:
+                        context.update({
+                            "zoom_error": f"Registration is not enabled for the event '{zoom_event.topic}'. "
+                                          f"Please enable registration for this event in your Zoom Account "
+                                          f"and try again"})
+
+            except ZoomApiCredentialsError as e:
+                context.update({"zoom_error": e.message})
+            except Exception:
+                context.update({"zoom_error": _("Error obtaining Zoom event. "
+                                                "Please make sure the Zoom credentials in Zoom Settings are correct, "
+                                                "and have required Zoom Account access scope.")})
+
+    if context.get("zoom_error"):
+        return render(request, template_name, context=context)
 
     form_fields_rel_name = None
     # get form fields relation name
@@ -59,6 +96,7 @@ def zoom_integration_view(request, page_id):
             return render(request, template_name, context=context)
 
     initial_data = None
+
     if form_page.zoom_reg_fields_mapping:
         initial_data = json.loads(form_page.zoom_reg_fields_mapping)
 

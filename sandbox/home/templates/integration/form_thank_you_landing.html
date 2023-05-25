@@ -21,12 +21,12 @@
                                 {% endfor %}
                             </ul>
                         {% endif %}
-                        {% if not hide_thank_you_text %}
-                            <h3 class="thank-you-text">
-                                {% if page.thank_you_text %} {{ page.thank_you_text }} {% else %}
-                                    We have received your submission. Thank you! {% endif %}
-                            </h3>
-                        {% endif %}
+
+                        <h3 class="thank-you-text">
+                            {% if page.thank_you_text %} {{ page.thank_you_text }} {% else %}
+                                We have received your submission. Thank you! {% endif %}
+                        </h3>
+
                         <div class="back-link-container" style="">
                             <a href="/" class="button is-rounded is-uppercase has-text-weight-bold back-button">
                                 <span class="icon">

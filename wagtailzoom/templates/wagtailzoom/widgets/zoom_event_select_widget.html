@@ -11,5 +11,8 @@
         </option>
     {% endfor %}
 </select>
+{% if widget.zoom_error %}
+    <div style="margin-top: 10px;color: red">{{ widget.zoom_error }}</div>
+{% endif %}
 
 {{ widget.extra_js|safe }}

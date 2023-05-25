@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "search",
 
     "wagtailzoom",
+    "bulma",
 
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
