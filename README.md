@@ -62,10 +62,10 @@ an account.
 
 #### Steps to create a Server-to-Server OAuth app
 
-1. Go to the Zoom App Marketplace. Click Develop in the dropdown menu in the top-right corner of the page and select
-   Build Server-to-Server App.
+1. Go to the [Zoom App Marketplace](https://marketplace.zoom.us/). Click Develop in the dropdown menu in the top-right
+   corner of the page and select **Build Server-to-Server App**.
 
-2. Add a name for your app and click Create.
+2. Add a name for your app and click **Create**.
 
 ![Create Server-to-Server OAuth App](screenshots/create_app.webp)
 
@@ -76,10 +76,8 @@ an account.
 5. **Feature:** Toggle whether you’d like to enable event subscriptions. If enabled, choose the event subscriptions
    you'd like to use. See Using Zoom Webhooks for details.
 6. **Scopes:** Scopes define the API methods this app is allowed to call, and thus which information and capabilities
-   are available on Zoom. Scopes are restricted to specific resources like channels or files. If you submit your app to
-   Zoom, we will verify the need for all requested scopes against the features that your app has to offer at the time of
-   review. You should limit the scopes you request to only those needed by your app. See OAuth scopes to learn more. If
-   you have the role permission to add scopes, add any scopes that you’d like to enable.
+   are available on Zoom. You should limit the scopes you request to only those needed by your app.
+   See [OAuth scopes](https://developers.zoom.us/docs/internal-apps/oauth-scopes-overview/) to learn more.
 
 ![Search Scopes](screenshots/search_scopes.webp)
 
