@@ -79,8 +79,8 @@ class ZoomEventSelectWidget(Input):
         current_site = Site.objects.get(is_default_site=True)
 
         zoom_settings = ZoomSettings.for_site(current_site)
-
-        api = ZoomApi(api_key=zoom_settings.api_key, api_secret=zoom_settings.api_secret)
+        api = ZoomApi(zoom_settings.oauth_account_id, zoom_settings.oauth_client_id,
+                      zoom_settings.oauth_client_secret)
         events = api.get_events()
 
         return events

@@ -45,40 +45,60 @@ The steps below explain how to configure the Zoom settings, as shown on the scre
 
 1. Click on Settings
 2. Select Zoom Settings
-3. Add the Zoom API Key. See next section on how to obtain the API Key.
-4. Add the Zoom API Secret. See next section on how to obtain the API Secret.
+3. Add the Zoom OAUTH Account ID, OAUTH Client ID and OAUTH Client Secret . See next section on how to create and obtain
+   these credentials from Zoom.
 5. Save
 
-### Obtaining Zoom API Key and API Secret
+### Create a Server-to-Server OAuth app
 
-`Note`: The Zoom Account user that generates the API credentials should have the permissions to:
+The account administrator or a developer with permissions to create server-to-server OAuth apps can create these apps in
+an account.
 
-- Read and write meetings
-- Read and write webinars
+#### Prerequisites
 
-First, log into [marketplace.zoom.us](https://marketplace.zoom.us)
+- [A Zoom account](https://support.zoom.us/hc/en-us/articles/360034967471-Getting-started-guide-for-new-users)
+- [Permissions to view and edit server-to-server OAuth apps](https://developers.zoom.us/docs/internal-apps/#enable-the-server-to-server-oauth-role)
+- [Permissions for scopes that you will add to the app](https://developers.zoom.us/docs/internal-apps/#assign-permissions-to-access-scopes)
 
-![Create Zoom JWT App](screenshots/create_zoom_jwt_app.png)
+#### Steps to create a Server-to-Server OAuth app
 
-After logging into [marketplace.zoom.us](https://marketplace.zoom.us), the interface will appear similar to above
-screenshot
+1. Go to the Zoom App Marketplace. Click Develop in the dropdown menu in the top-right corner of the page and select
+   Build Server-to-Server App.
 
-Follow the steps below to create a JWT app, to get the API credentials:
+2. Add a name for your app and click Create.
 
-1. Go to the 'Develop' dropdown button right next to the manage button,
-2. Click 'Build App'
-3. On the 'Choose your app' type page, click `Create` from within the JWT box
+![Create Server-to-Server OAuth App](screenshots/create_app.webp)
 
-- A modal will appear to name your app — name your app and proceed.
+3. **App credentials**: View your account ID, client ID and client secret. You'll use these credentials to authenticate
+   with Zoom.
+4. **Information:** Add information about your app, such as a short description, company name, and developer contact
+   information (name and email address required for activation).
+5. **Feature:** Toggle whether you’d like to enable event subscriptions. If enabled, choose the event subscriptions
+   you'd like to use. See Using Zoom Webhooks for details.
+6. **Scopes:** Scopes define the API methods this app is allowed to call, and thus which information and capabilities
+   are available on Zoom. Scopes are restricted to specific resources like channels or files. If you submit your app to
+   Zoom, we will verify the need for all requested scopes against the features that your app has to offer at the time of
+   review. You should limit the scopes you request to only those needed by your app. See OAuth scopes to learn more. If
+   you have the role permission to add scopes, add any scopes that you’d like to enable.
 
-- On the next page, under Information, fill out a Company Name, Developer Name, and Developer Email.
+![Search Scopes](screenshots/search_scopes.webp)
 
-![Zoom JWT App Credentials](screenshots/zoom_api_credentials.png)
+Choose **Add Scopes** to search for and add scopes:
 
-1. Once completed filling company details, your API Key and Secret will be generated automatically under the App
-   Credentials tab
-2. Copy the API key, and add to the Zoom settings in the Wagtail Admin
-3. Copy the API Secret. and add to the Zoom Settings in the Wagtail Admin
+![Add Scopes](screenshots/add_scopes.webp)
+
+7. **Activation:** Your app should be activated. If you see errors that prevent activation, please address them. You
+   will not be able to generate an access token to make API calls unless your app is activated. If your app is
+   deactivated, existing tokens will no longer work.
+
+### Get app credentials
+
+**App credentials** are the client credentials, including the **account ID, client ID, and client secret**, which Zoom
+provides to app developers to access the Zoom platform. You can get these credentials for the detail page of your app in
+the Zoom App Marketplace.
+
+More information on how to get the app credentials can be
+found [here](https://developers.zoom.us/docs/internal-apps/create/)
 
 ### Integrating Zoom Meeting/Webinar registration to custom form pages
 

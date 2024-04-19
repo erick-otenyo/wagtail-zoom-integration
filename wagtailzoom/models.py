@@ -15,24 +15,32 @@ from .widgets import ZoomEventSelectWidget
 
 @register_setting
 class ZoomSettings(BaseSiteSetting):
-    api_key = models.CharField(
+    oauth_account_id = models.CharField(
         max_length=256,
         null=True,
         blank=True,
-        verbose_name=_("Zoom API Key"),
-        help_text=_("API Key obtained from Zoom"),
+        verbose_name=_("Zoom OAUTH Account ID"),
+        help_text=_("Account ID obtained from Zoom Server-to-Server OAuth"),
     )
-    api_secret = models.CharField(
+    oauth_client_id = models.CharField(
         max_length=256,
         null=True,
         blank=True,
-        verbose_name=_("Zoom API Secret"),
-        help_text=_("API Secret obtained from Zoom"),
+        verbose_name=_("Zoom OAUTH Client ID"),
+        help_text=_("Client ID obtained from Zoom Server-to-Server OAuth"),
+    )
+    oauth_client_secret = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        verbose_name=_("Zoom OAUTH Client Secret"),
+        help_text=_("Client Secret obtained from Zoom Server-to-Server OAuth"),
     )
 
     panels = [
-        FieldPanel("api_key"),
-        FieldPanel("api_secret"),
+        FieldPanel("oauth_account_id"),
+        FieldPanel("oauth_client_id"),
+        FieldPanel("oauth_client_secret"),
     ]
 
 
@@ -111,7 +119,8 @@ class AbstractZoomIntegrationForm(AbstractForm):
         if self.zoom_event_id and self.zoom_merge_fields:
             try:
                 zoom_settings = ZoomSettings.for_request(request)
-                zoom = ZoomApi(api_key=zoom_settings.api_key, api_secret=zoom_settings.api_secret)
+                zoom = ZoomApi(zoom_settings.oauth_account_id, zoom_settings.oauth_client_id,
+                               zoom_settings.oauth_client_secret)
 
                 rendered_dictionary = self.render_zoom_dictionary(
                     self.format_zoom_form_submission(kwargs['form']),
