@@ -7,7 +7,7 @@
     {% for event in widget.selectable_events %}
         {% if event.id == widget.stored_event_id %} selected{% endif %}
         <option value="{{ event.id }}" {% if event.id|stringformat:"i" == widget.stored_event_id %} selected{% endif %}>
-            {{ event.topic }}
+            {{ event.event_type_label }} - {{ event.topic }}
         </option>
     {% endfor %}
 </select>

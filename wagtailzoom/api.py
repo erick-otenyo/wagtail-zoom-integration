@@ -1,12 +1,9 @@
-from datetime import datetime, timedelta
-import iso8601
+import base64
 
-import jwt
+import iso8601
 import requests
 
 from wagtailzoom.errors import ZoomApiCredentialsError
-
-JWT_EXP_DELTA_SECONDS = 60 * 2  # 2 minutes
 
 
 def get_created_time(d):
@@ -14,29 +11,29 @@ def get_created_time(d):
 
 
 class ZoomApi:
-    def __init__(self, api_key, api_secret):
+    def __init__(self, oauth_account_id, oauth_client_id, oauth_client_secret):
         self.is_active = False
         self.headers = {}
         self.base_url = "https://api.zoom.us/v2"
 
-        if not api_key:
-            raise ZoomApiCredentialsError(
-                "No Zoom API Key provided. Please set API Key from Zoom Settings under settings")
+        if not oauth_account_id and not oauth_client_id and not oauth_client_secret:
+            raise ZoomApiCredentialsError("Missing Zoom API OAUTH credentials")
 
-        if not api_secret:
-            raise ZoomApiCredentialsError(
-                "No Zoom API Secret provided. Please set API Secret from Zoom Settings under settings")
+        self.init_api(oauth_account_id, oauth_client_id, oauth_client_secret)
 
-        self.init_api(api_key, api_secret)
+    def init_api(self, oauth_account_id, oauth_client_id, oauth_client_secret):
+        auth_str = f"{oauth_client_id}:{oauth_client_secret}"
+        encoded_auth_str = base64.b64encode(auth_str.encode()).decode('utf-8')
 
-    def init_api(self, api_key, api_secret):
-        payload = {
-            'iss': api_key,
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
-        }
+        r = requests.post(f'https://zoom.us/oauth/token?grant_type=account_credentials&account_id={oauth_account_id}',
+                          headers={'Authorization': f'Basic {encoded_auth_str}'})
 
-        jwt_token = jwt.encode(payload, api_secret)
-        self.headers["Authorization"] = "Bearer {}".format(jwt_token)
+        r.raise_for_status()
+
+        res = r.json()
+        access_token = res.get("access_token")
+
+        self.headers["Authorization"] = f"Bearer {access_token}"
 
         self.is_active = True
 
@@ -68,6 +65,7 @@ class ZoomApi:
 
             for index, meeting in enumerate(meetings):
                 meetings[index]["event_type"] = "meeting"
+                meetings[index]["event_type_label"] = "Meeting"
 
         return meetings
 
@@ -86,6 +84,7 @@ class ZoomApi:
 
             for index, webinar in enumerate(webinars):
                 webinars[index]["event_type"] = "webinar"
+                webinars[index]["event_type_label"] = "Webinar"
 
         return webinars
 

@@ -32,7 +32,8 @@ def zoom_integration_view(request, page_id):
         if event_id:
             try:
                 zoom_settings = ZoomSettings.for_request(request)
-                zoom_api = ZoomApi(api_key=zoom_settings.api_key, api_secret=zoom_settings.api_secret)
+                zoom_api = ZoomApi(zoom_settings.oauth_account_id, zoom_settings.oauth_client_id,
+                                   zoom_settings.oauth_client_secret)
 
                 if event_type == "meeting":
                     zoom_event = zoom_api.get_meeting(event_id)
