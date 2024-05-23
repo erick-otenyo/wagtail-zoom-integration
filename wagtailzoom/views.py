@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from modelcluster.models import get_all_child_relations
+from requests import HTTPError
 from wagtail.contrib.forms.models import AbstractFormField
 from wagtail.models import Page
 
@@ -48,16 +49,26 @@ def zoom_integration_view(request, page_id):
                     if approval_type == 2:
                         topic = zoom_event.get("topic")
                         context.update({
-                            "zoom_error": f"Registration is not enabled for the event '{topic}'. "
-                                          f"Please enable registration for this event in your Zoom Account "
-                                          f"and try again"})
+                            "zoom_error": _(
+                                "Registration is not enabled for the event '%(topic)s'. Please enable registration "
+                                "for this event in your Zoom Account and try again") % {"topic": topic}})
 
             except ZoomApiCredentialsError as e:
                 context.update({"zoom_error": e.message})
-            except Exception:
-                context.update({"zoom_error": _("Error obtaining Zoom event. "
-                                                "Please make sure the Zoom credentials in Zoom Settings are correct, "
-                                                "and have required Zoom Account access scope.")})
+            except Exception as e:
+                error_message = _("Error obtaining Zoom event.")
+
+                if isinstance(e, HTTPError):
+                    json_response = e.response.json()
+                    if json_response and json_response.get("message"):
+                        message = json_response.get("message")
+                        error_message = f"{error_message} {message}"
+                else:
+                    message = _("Please make sure the Zoom credentials in Zoom Settings are correct and have required "
+                                "Zoom Account access scope")
+                    error_message = f"{error_message}  {message}"
+
+                context.update({"zoom_error": error_message})
 
     if context.get("zoom_error"):
         return render(request, template_name, context=context)

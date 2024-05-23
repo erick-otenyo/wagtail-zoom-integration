@@ -12,7 +12,21 @@
     {% endfor %}
 </select>
 {% if widget.zoom_error %}
-    <div style="margin-top: 10px;color: red">{{ widget.zoom_error }}</div>
+    <div class="error">
+        <div class="help-block help-critical">
+            <svg class="icon icon-warning icon" aria-hidden="true">
+                <use href="#icon-warning"></use>
+            </svg>
+            {{ widget.zoom_error }}
+        </div>
+    </div>
+{% elif not widget.selectable_events %}
+    <div class="help-block help-warning">
+        <svg class="icon icon-warning icon" aria-hidden="true">
+            <use href="#icon-warning"></use>
+        </svg>
+        {{ widget.no_events_message }}
+    </div>
 {% endif %}
 
 {{ widget.extra_js|safe }}

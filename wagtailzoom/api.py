@@ -51,7 +51,7 @@ class ZoomApi:
         return response
 
     def get_meetings(self, limit=10):
-        url = "{}/users/me/meetings".format(self.base_url)
+        url = "{}/users/me/meetings?type=upcoming_meetings".format(self.base_url)
         response = self._get(url)
         response.raise_for_status()
 
@@ -67,10 +67,14 @@ class ZoomApi:
                 meetings[index]["event_type"] = "meeting"
                 meetings[index]["event_type_label"] = "Meeting"
 
+        # sort by start time, with meeting closest to start  first
+        if meetings:
+            sorted(meetings, key=lambda x: x["start_time"]).reverse()
+
         return meetings
 
     def get_webinars(self, limit=10):
-        url = "{}/users/me/webinars".format(self.base_url)
+        url = "{}/users/me/webinars?type=upcoming".format(self.base_url)
         response = self._get(url)
 
         response.raise_for_status()
@@ -86,13 +90,17 @@ class ZoomApi:
                 webinars[index]["event_type"] = "webinar"
                 webinars[index]["event_type_label"] = "Webinar"
 
+        # sort by start time, with webinar closest to start first
+        if webinars:
+            sorted(webinars, key=lambda x: x["start_time"]).reverse()
+
         return webinars
 
     def get_events(self):
-        meetings = self.get_meetings(limit=5)
+        meetings = self.get_meetings(limit=20)
 
         try:
-            webinars = self.get_webinars(limit=5)
+            webinars = self.get_webinars(limit=20)
             meetings.extend(webinars)
         except Exception as e:
             pass
