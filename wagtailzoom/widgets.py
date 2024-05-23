@@ -3,6 +3,7 @@ import json
 from django.forms.widgets import Input, Select
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
+from requests import HTTPError
 from wagtail.models import Site
 
 from .api import ZoomApi
@@ -40,11 +41,18 @@ class ZoomEventSelectWidget(Input):
                            "Please make sure the Zoom credentials in Zoom Settings are correct, "
                            "and have required Zoom Account access scope.")
 
+            if isinstance(e, HTTPError):
+                response = e.response.json()
+                if response and response.get("message"):
+                    zoom_error += _("- Specific Error: ") + response.get("message")
+
         ctx["widget"]["value"] = json.dumps(json_value)
         ctx['widget']['extra_js'] = self.render_js(name, event_id, zoom_events)
         ctx["widget"]["selectable_events"] = zoom_events
         ctx["widget"]["stored_event_id"] = event_id
         ctx["widget"]["zoom_error"] = zoom_error
+        ctx["widget"]["no_events_message"] = _("No Upcoming or Ongoing Meetings/Webinars found. "
+                                               "Please create one on Zoom and try again.")
 
         return ctx
 
