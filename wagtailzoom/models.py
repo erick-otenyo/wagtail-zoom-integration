@@ -91,10 +91,19 @@ class AbstractZoomIntegrationForm(AbstractForm):
 
         return data
 
+    def should_perform_zoom_integration_operation(self, request, form):
+        # override this method to add custom logic to determine if the zoom integration operation should be performed
+        return True
+
+    def show_page_listing_zoom_integration_button(self):
+        # override this method to add custom logic to determine if the
+        # zoom integration button should be shown in the page listing
+        return True
+
     def process_form_submission(self, form):
         form_submission = super(AbstractZoomIntegrationForm, self).process_form_submission(form)
 
-        if self.request:
+        if self.request and self.should_perform_zoom_integration_operation(self.request, form):
             self.zoom_integration_operation(self, form=form, request=self.request)
 
         return form_submission
