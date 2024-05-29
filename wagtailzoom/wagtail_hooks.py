@@ -19,12 +19,13 @@ def urlconf_wagtail_zoom():
 @hooks.register('register_page_listing_buttons')
 def page_listing_buttons(page, page_perms, next_url=None):
     if hasattr(page, "is_zoom_integration") and hasattr(page, "zoom_event"):
-        if page.zoom_event_id:
+        latest_revision = page.get_latest_revision_as_object()
+        if latest_revision.zoom_event_id and page.show_page_listing_zoom_integration_button():
             url = reverse("zoom_integration_view", args=[page.pk, ])
             yield wagtail_admin_widgets.PageListingButton(
                 "Zoom Integration",
                 url,
-                priority=40
+                priority=50
             )
 
 

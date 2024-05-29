@@ -17,7 +17,7 @@ from .models import ZoomSettings
 
 def zoom_integration_view(request, page_id):
     page = Page.objects.get(pk=page_id)
-    form_page = page.specific
+    form_page = page.get_latest_revision_as_object()
     edit_url = reverse("wagtailadmin_pages:edit", args=[form_page.pk])
     context = {"page": form_page, "page_edit_url": edit_url}
     template_name = "wagtailzoom/zoom_integration_form.html"
